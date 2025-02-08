@@ -17,6 +17,11 @@ env:
 jobs:
   amd64:
     runs-on: ubuntu-24.04
+    services:
+      mongo:
+        image: mongo:8
+        ports:
+          - 27017:27017
     permissions:
       contents: read
       packages: write
@@ -26,25 +31,25 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Git Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      # - name: Git Checkout
+      #   uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Login to ghcr.io
-        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
-        if: ${{ github.ref_name == github.event.repository.default_branch }}
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN  }}
+      # - name: Login to ghcr.io
+      #   uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      #   if: ${{ github.ref_name == github.event.repository.default_branch }}
+      #   with:
+      #     registry: ${{ env.REGISTRY }}
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN  }}
 
-      - name: Build image and push to registry
-        uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991 # v6.13.0
-        with:
-          context: .
-          file: Dockerfile
-          platforms: linux/amd64
-          push: ${{ github.ref_name == github.event.repository.default_branch }}
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+      # - name: Build image and push to registry
+      #   uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991 # v6.13.0
+      #   with:
+      #     context: .
+      #     file: Dockerfile
+      #     platforms: linux/amd64
+      #     push: ${{ github.ref_name == github.event.repository.default_branch }}
+      #     tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Deploy to Coolify
         if: ${{ github.ref_name == github.event.repository.default_branch }}
